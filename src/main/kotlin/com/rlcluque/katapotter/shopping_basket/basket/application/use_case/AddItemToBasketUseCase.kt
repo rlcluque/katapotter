@@ -12,7 +12,7 @@ class AddItemToBasketUseCase(
 ) {
     fun execute(parameters: AddItemToBasketParameters) {
         val basket = basketRepository.find(parameters.basketId) ?: return
-        val book = bookRepository.find(parameters.bookId)
+        val book = bookRepository.find(parameters.bookId) ?: return
 
         basket.addItem(parameters.itemId,book)
 
