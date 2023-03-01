@@ -1,8 +1,7 @@
 package com.rlcluque.katapotter.shopping_basket.basket.application.use_case
 
-import com.rlcluque.katapotter.shared.domain.event.shopping_basket.basket.ItemAddedToBasketV1
+import com.rlcluque.katapotter.shared.domain.event.DomainEvent
 import com.rlcluque.katapotter.shared.domain.id.BasketId
-import com.rlcluque.katapotter.shared.domain.id.BasketItemId
 import com.rlcluque.katapotter.shared.domain.id.BookId
 import com.rlcluque.katapotter.shopping_basket.basket.domain.Basket
 import com.rlcluque.katapotter.shopping_basket.basket.domain.BasketMother
@@ -10,7 +9,6 @@ import com.rlcluque.katapotter.shopping_basket.basket.domain.BasketRepository
 import com.rlcluque.katapotter.shopping_basket.basket.domain.ItemAddedToBasketMother
 import com.rlcluque.katapotter.shopping_basket.basket.domain.value_object.BasketItemMother
 import com.rlcluque.katapotter.shopping_basket.basket.domain.value_object.BasketTotalAmountMother
-import com.rlcluque.katapotter.shopping_basket.book.domain.Book
 import com.rlcluque.katapotter.shopping_basket.book.domain.BookMother
 import com.rlcluque.katapotter.shopping_basket.book.domain.BookRepository
 import org.junit.jupiter.api.Test
@@ -26,19 +24,18 @@ internal class AddItemToBasketUseCaseTest {
     @Test
     fun `GIVEN an existing basket with one existing potter book WHEN I add to basket the same book THEN total should be 16 euros`() {
         val inputParameters = AddItemToBasketParametersMother.create()
-        val existingBook = BookMother.create(id = inputParameters.bookId)
+        val existingBasketItem = BasketItemMother.create(
+                bookId = inputParameters.bookId,
+        )
         val existingBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(
-                        BasketItemMother.create(bookId = inputParameters.bookId),
-                ),
+                items = listOf(existingBasketItem),
                 totalAmount = BasketTotalAmountMother.create(8.0),
         )
-
         val expectedBasket = BasketMother.create(
                 id = inputParameters.basketId,
                 items = listOf(
-                        BasketItemMother.create(bookId = inputParameters.bookId),
+                        existingBasketItem,
                         BasketItemMother.create(
                                 itemId = inputParameters.itemId,
                                 bookId = inputParameters.bookId,
@@ -48,14 +45,14 @@ internal class AddItemToBasketUseCaseTest {
         )
         val expectedEvents = listOf(
                 ItemAddedToBasketMother.create(
-                        aggregateId = inputParameters.basketId.toString(),
-                        newItem = inputParameters.itemId.toString(),
+                        aggregateId = inputParameters.basketId.value,
+                        newItem = inputParameters.itemId.value,
                         newTotalAmount = 16.0,
                 )
         )
 
         givenExistingBasket(existingBasket)
-        givenExistingBook(existingBook)
+        givenExistingBook(inputParameters.bookId)
 
         whenIAddItemToBasket(inputParameters)
 
@@ -65,8 +62,23 @@ internal class AddItemToBasketUseCaseTest {
         shouldNotifyAbout(expectedEvents)
     }
 
-    private fun shouldNotifyAbout(expectedEvents: List<ItemAddedToBasketV1>) {
-        verify(basketRepository, times(1)).notify(expectedEvents)
+    private fun shouldNotifyAbout(expectedEvents: List<DomainEvent>) {
+        verify(basketRepository, times(1)).notify(
+                argThat{
+                    similarDomainEvents(this,expectedEvents)
+                }
+        )
+    }
+
+    private fun similarDomainEvents(domainEvents: List<DomainEvent>, expectedEvents: List<DomainEvent>) : Boolean {
+        if (domainEvents.count() != expectedEvents.count()) return false
+
+        domainEvents.forEach{ domainEvent ->
+            if (expectedEvents.find { expectedEvent -> expectedEvent.isSimilarTo(domainEvent) } == null)
+                return false
+        }
+
+        return true
     }
 
     private fun shouldSave(expectedBasket: Basket) {
@@ -85,7 +97,9 @@ internal class AddItemToBasketUseCaseTest {
         systemUnderTest.execute(inputParameters)
     }
 
-    private fun givenExistingBook(existingBook: Book) {
+    private fun givenExistingBook(bookId: BookId) {
+        val existingBook = BookMother.create(id = bookId)
+
         Mockito.`when`(bookRepository.find(any())).thenReturn(existingBook)
     }
 

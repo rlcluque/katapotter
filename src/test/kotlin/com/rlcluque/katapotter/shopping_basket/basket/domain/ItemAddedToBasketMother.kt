@@ -1,5 +1,6 @@
 package com.rlcluque.katapotter.shopping_basket.basket.domain
 
+import com.rlcluque.katapotter.shared.domain.event.shopping_basket.basket.ItemAddedToBasketPayloadV1
 import com.rlcluque.katapotter.shared.domain.event.shopping_basket.basket.ItemAddedToBasketV1
 
 class ItemAddedToBasketMother {
@@ -10,8 +11,10 @@ class ItemAddedToBasketMother {
                 newTotalAmount: Double = 45.0
         ) = ItemAddedToBasketV1(
                 aggregateId = aggregateId,
-                newItem = newItem,
-                newTotalAmount = newTotalAmount,
+                ItemAddedToBasketPayloadV1(
+                    newItem = newItem,
+                    newTotalAmount = newTotalAmount,
+                )
         )
     }
 }
