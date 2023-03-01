@@ -55,9 +55,7 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
     @Test
     fun `GIVEN an existing basket with one existing potter book WHEN I add to basket a different existing book THEN total should be 15,2 euros`() {
         val inputParameters = AddItemToBasketParametersMother.create()
-        val existingBasketItem = BasketItemMother.create(
-                bookId = inputParameters.bookId,
-        )
+        val existingBasketItem = BasketItemMother.create()
         val existingBasket = BasketMother.create(
                 id = inputParameters.basketId,
                 items = listOf(existingBasketItem),
@@ -69,6 +67,7 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
                         existingBasketItem,
                         BasketItemMother.create(
                                 itemId = inputParameters.itemId,
+                                bookId = inputParameters.bookId,
                         )
                 ),
                 totalAmount = BasketTotalAmountMother.create(value = 15.2),

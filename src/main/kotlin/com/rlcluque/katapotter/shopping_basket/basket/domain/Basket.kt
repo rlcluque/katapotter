@@ -17,14 +17,30 @@ data class Basket(
     fun addItem(itemId: BasketItemId, book: Book) {
         val newBasketItem = book.toBasketItem(itemId)
         val newItems = items.toMutableList()
-        val newTotalAmount = totalAmount.plus(book.price())
 
         newItems.add(newBasketItem)
 
         items = newItems
-        totalAmount = newTotalAmount
+
+        calculateTotalAmount()
 
         basketItemAdded(newBasketItem)
+    }
+
+    private fun calculateTotalAmount() {
+        val distinct = items.distinctBy { it.bookId }
+        val discount = if (distinct.count() <= 1) 0
+            else when(distinct.count()) {
+                2 -> 5
+                3 -> 10
+                4 -> 20
+                5 -> 25
+                else -> throw Exception("End of the world")
+            }
+        val totalAmountForDistinctBooks = distinct.count().toDouble() * 8 * (100 - discount) / 100
+        val totalAmountForRepeatedBooks = (items.count().toDouble() - distinct.count()) * 8
+
+        totalAmount = BasketTotalAmount(totalAmountForDistinctBooks + totalAmountForRepeatedBooks)
     }
 
     private fun basketItemAdded(newBasketItem: BasketItem) {
