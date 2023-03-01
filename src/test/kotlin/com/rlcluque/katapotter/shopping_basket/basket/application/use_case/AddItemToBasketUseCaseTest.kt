@@ -53,7 +53,47 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
     }
 
     @Test
-    fun `GIVEN a not existing basket WHEN I add to basket another book THEN nothing should happen`() {
+    fun `GIVEN an existing basket with one existing potter book WHEN I add to basket a different existing book THEN total should be 15,2 euros`() {
+        val inputParameters = AddItemToBasketParametersMother.create()
+        val existingBasketItem = BasketItemMother.create(
+                bookId = inputParameters.bookId,
+        )
+        val existingBasket = BasketMother.create(
+                id = inputParameters.basketId,
+                items = listOf(existingBasketItem),
+                totalAmount = BasketTotalAmountMother.create(8.0),
+        )
+        val expectedBasket = BasketMother.create(
+                id = inputParameters.basketId,
+                items = listOf(
+                        existingBasketItem,
+                        BasketItemMother.create(
+                                itemId = inputParameters.itemId,
+                        )
+                ),
+                totalAmount = BasketTotalAmountMother.create(value = 15.2),
+        )
+        val expectedEvents = listOf(
+                ItemAddedToBasketMother.create(
+                        aggregateId = inputParameters.basketId.value,
+                        newItem = inputParameters.itemId.value,
+                        newTotalAmount = 15.2,
+                )
+        )
+
+        givenExistingBasket(existingBasket)
+        givenExistingBook(inputParameters.bookId)
+
+        whenIAddItemToBasket(inputParameters)
+
+        shouldFindBasketById(inputParameters.basketId)
+        shouldFindBookById(inputParameters.bookId)
+        shouldSave(expectedBasket)
+        shouldNotifyAbout(expectedEvents)
+    }
+
+    @Test
+    fun `GIVEN a not existing basket WHEN I add to basket some book THEN nothing should happen`() {
         val inputParameters = AddItemToBasketParametersMother.create()
 
         givenNotExistingBasket()
