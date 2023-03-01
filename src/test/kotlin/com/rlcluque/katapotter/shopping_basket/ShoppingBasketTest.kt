@@ -23,6 +23,10 @@ open class ShoppingBasketTest {
         )
     }
 
+    protected fun shouldNotNotifyAbout() {
+        verify(basketRepository, never()).notify(any())
+    }
+
     private fun similarDomainEvents(domainEvents: List<DomainEvent>, expectedEvents: List<DomainEvent>) : Boolean {
         if (domainEvents.count() != expectedEvents.count()) return false
 
@@ -38,12 +42,24 @@ open class ShoppingBasketTest {
         verify(basketRepository, times(1)).save(expectedBasket)
     }
 
+    protected fun shouldNotSave() {
+        verify(basketRepository, never()).save(any())
+    }
+
     protected fun shouldFindBookById(bookId: BookId) {
         verify(bookRepository, times(1)).find(bookId)
     }
 
+    protected fun shouldNotFindBookById() {
+        verify(bookRepository, never()).find(any())
+    }
+
     protected fun shouldFindBasketById(basketId: BasketId) {
         verify(basketRepository, times(1)).find(basketId)
+    }
+
+    protected fun shouldNotFindBasketById() {
+        verify(basketRepository, never()).find(any())
     }
 
     protected fun givenExistingBook(bookId: BookId) {
@@ -54,5 +70,9 @@ open class ShoppingBasketTest {
 
     protected fun givenExistingBasket(existingBasket: Basket) {
         Mockito.`when`(basketRepository.find(any())).thenReturn(existingBasket)
+    }
+
+    protected fun givenNotExistingBasket() {
+        Mockito.`when`(basketRepository.find(any())).thenReturn(null)
     }
 }

@@ -53,44 +53,17 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
     }
 
     @Test
-    fun `GIVEN an existing basket with one existing potter book WHEN I add to basket the same book THEN total should be 16 euros`() {
+    fun `GIVEN a not existing basket WHEN I add to basket the same book THEN nothing should happen`() {
         val inputParameters = AddItemToBasketParametersMother.create()
-        val existingBasketItem = BasketItemMother.create(
-                bookId = inputParameters.bookId,
-        )
-        val existingBasket = BasketMother.create(
-                id = inputParameters.basketId,
-                items = listOf(existingBasketItem),
-                totalAmount = BasketTotalAmountMother.create(8.0),
-        )
-        val expectedBasket = BasketMother.create(
-                id = inputParameters.basketId,
-                items = listOf(
-                        existingBasketItem,
-                        BasketItemMother.create(
-                                itemId = inputParameters.itemId,
-                                bookId = inputParameters.bookId,
-                        )
-                ),
-                totalAmount = BasketTotalAmountMother.create(value = 16.0),
-        )
-        val expectedEvents = listOf(
-                ItemAddedToBasketMother.create(
-                        aggregateId = inputParameters.basketId.value,
-                        newItem = inputParameters.itemId.value,
-                        newTotalAmount = 16.0,
-                )
-        )
 
-        givenExistingBasket(existingBasket)
-        givenExistingBook(inputParameters.bookId)
+        givenNotExistingBasket()
 
         whenIAddItemToBasket(inputParameters)
 
-        shouldFindBasketById(inputParameters.basketId)
-        shouldFindBookById(inputParameters.bookId)
-        shouldSave(expectedBasket)
-        shouldNotifyAbout(expectedEvents)
+        shouldNotFindBasketById()
+        shouldNotFindBookById()
+        shouldNotSave()
+        shouldNotNotifyAbout()
     }
 
     private fun whenIAddItemToBasket(inputParameters: AddItemToBasketParameters) {
