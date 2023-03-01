@@ -53,7 +53,7 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
     }
 
     @Test
-    fun `GIVEN a not existing basket WHEN I add to basket the same book THEN nothing should happen`() {
+    fun `GIVEN a not existing basket WHEN I add to basket another book THEN nothing should happen`() {
         val inputParameters = AddItemToBasketParametersMother.create()
 
         givenNotExistingBasket()
@@ -61,6 +61,20 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
         whenIAddItemToBasket(inputParameters)
 
         shouldNotFindBookById()
+        shouldNotSave()
+        shouldNotNotifyAbout()
+    }
+
+    @Test
+    fun `GIVEN an existing basket WHEN I add to basket a book that does not exist THEN nothing should happen`() {
+        val inputParameters = AddItemToBasketParametersMother.create()
+        val existingBasket = BasketMother.create()
+
+        givenExistingBasket(existingBasket)
+        givenNotExistingBook()
+
+        whenIAddItemToBasket(inputParameters)
+
         shouldNotSave()
         shouldNotNotifyAbout()
     }

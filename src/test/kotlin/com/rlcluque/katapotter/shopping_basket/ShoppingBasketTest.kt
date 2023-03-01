@@ -64,6 +64,10 @@ open class ShoppingBasketTest {
         Mockito.`when`(bookRepository.find(any())).thenReturn(existingBook)
     }
 
+    protected fun givenNotExistingBook() {
+        Mockito.`when`(bookRepository.find(any())).thenReturn(null)
+    }
+
     protected fun givenExistingBasket(existingBasket: Basket) {
         Mockito.`when`(basketRepository.find(any())).thenReturn(existingBasket)
     }
