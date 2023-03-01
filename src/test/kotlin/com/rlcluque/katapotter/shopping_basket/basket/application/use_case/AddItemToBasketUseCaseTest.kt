@@ -60,7 +60,6 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
 
         whenIAddItemToBasket(inputParameters)
 
-        shouldNotFindBasketById()
         shouldNotFindBookById()
         shouldNotSave()
         shouldNotNotifyAbout()

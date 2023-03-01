@@ -58,10 +58,6 @@ open class ShoppingBasketTest {
         verify(basketRepository, times(1)).find(basketId)
     }
 
-    protected fun shouldNotFindBasketById() {
-        verify(basketRepository, never()).find(any())
-    }
-
     protected fun givenExistingBook(bookId: BookId) {
         val existingBook = BookMother.create(id = bookId)
 
