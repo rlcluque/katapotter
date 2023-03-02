@@ -28,20 +28,24 @@ data class Basket(
     }
 
     private fun calculateTotalAmount() {
-        val distinct = items.distinctBy { it.bookId }
-        val discount = if (distinct.count() <= 1) 0
-            else when(distinct.count()) {
-                2 -> 5
-                3 -> 10
-                4 -> 20
-                5 -> 25
-                else -> throw Exception("End of the world")
-            }
-        val totalAmountForDistinctBooks = distinct.count().toDouble() * Book.DEFAULT_PRICE * (100 - discount) / 100
-        val totalAmountForRepeatedBooks = (items.count().toDouble() - distinct.count()) * Book.DEFAULT_PRICE
+        val distinctCount = items.distinctBy { it.bookId }.count()
+        val repeatedCount = items.count() - distinctCount
+        val discount = discountPerDistinctItems(distinctCount)
+        val totalAmountForDistinctBooks = distinctCount.toDouble() * Book.DEFAULT_PRICE * (100 - discount) / 100
+        val totalAmountForRepeatedBooks = repeatedCount * Book.DEFAULT_PRICE
 
         totalAmount = BasketTotalAmount(totalAmountForDistinctBooks + totalAmountForRepeatedBooks)
     }
+
+    private fun discountPerDistinctItems(count: Int) = if (count <= 1) 0
+        else when(count) {
+            2 -> 5
+            3 -> 10
+            4 -> 20
+            5 -> 25
+            else -> throw Exception("End of the world")
+        }
+
 
     private fun basketItemAdded(newBasketItem: BasketItem) {
         recordDomain(

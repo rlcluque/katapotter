@@ -168,6 +168,21 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
     }
 
     @Test
+    fun `WHEN I add to basket the same item THEN nothing should happen`() {
+        val inputParameters = AddItemToBasketParametersMother.create()
+
+        givenExistingBasket()
+
+        whenIAddItemToBasket(inputParameters)
+
+        shouldFindBasketByItemId(inputParameters.itemId)
+        shouldNotFindBasketById()
+        shouldNotFindBookById()
+        shouldNotSave()
+        shouldNotNotifyAbout()
+    }
+
+    @Test
     fun `GIVEN a not existing basket WHEN I add to basket some book THEN nothing should happen`() {
         val inputParameters = AddItemToBasketParametersMother.create()
 

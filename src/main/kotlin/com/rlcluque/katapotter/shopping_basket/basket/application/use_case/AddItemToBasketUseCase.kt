@@ -11,6 +11,8 @@ class AddItemToBasketUseCase(
         private val bookRepository: BookRepository,
 ) {
     fun execute(parameters: AddItemToBasketParameters) {
+        if (basketRepository.findByItem(parameters.itemId) != null) return
+
         val basket = basketRepository.find(parameters.basketId) ?: return
         val book = bookRepository.find(parameters.bookId) ?: return
 

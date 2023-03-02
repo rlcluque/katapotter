@@ -2,9 +2,11 @@ package com.rlcluque.katapotter.shopping_basket
 
 import com.rlcluque.katapotter.shared.domain.event.DomainEvent
 import com.rlcluque.katapotter.shared.domain.id.BasketId
+import com.rlcluque.katapotter.shared.domain.id.BasketItemId
 import com.rlcluque.katapotter.shared.domain.id.BookId
 import com.rlcluque.katapotter.shopping_basket.basket.application.use_case.AddItemToBasketParameters
 import com.rlcluque.katapotter.shopping_basket.basket.domain.Basket
+import com.rlcluque.katapotter.shopping_basket.basket.domain.BasketMother
 import com.rlcluque.katapotter.shopping_basket.basket.domain.BasketRepository
 import com.rlcluque.katapotter.shopping_basket.book.domain.BookMother
 import com.rlcluque.katapotter.shopping_basket.book.domain.BookRepository
@@ -58,6 +60,14 @@ open class ShoppingBasketTest {
         verify(basketRepository, times(1)).find(basketId)
     }
 
+    protected fun shouldNotFindBasketById() {
+        verify(basketRepository, never()).find(any())
+    }
+
+    protected fun shouldFindBasketByItemId(itemId: BasketItemId) {
+        verify(basketRepository, times(1)).findByItem(itemId)
+    }
+
     protected fun givenExistingBook(bookId: BookId) {
         val existingBook = BookMother.create(id = bookId)
 
@@ -70,6 +80,10 @@ open class ShoppingBasketTest {
 
     protected fun givenExistingBasket(existingBasket: Basket) {
         Mockito.`when`(basketRepository.find(any())).thenReturn(existingBasket)
+    }
+
+    protected fun givenExistingBasket() {
+        Mockito.`when`(basketRepository.findByItem(any())).thenReturn(BasketMother.create())
     }
 
     protected fun givenNotExistingBasket() {
