@@ -24,8 +24,7 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
         )
         val expectedBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(
-                        existingBasketItem,
+                items = listOf(existingBasketItem,
                         BasketItemMother.create(
                                 itemId = inputParameters.itemId,
                                 bookId = inputParameters.bookId,
@@ -63,8 +62,7 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
         )
         val expectedBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(
-                        existingBasketItem,
+                items = listOf(existingBasketItem,
                         BasketItemMother.create(
                                 itemId = inputParameters.itemId,
                                 bookId = inputParameters.bookId,
@@ -77,6 +75,45 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
                         aggregateId = inputParameters.basketId.value,
                         newItem = inputParameters.itemId.value,
                         newTotalAmount = 15.2,
+                )
+        )
+
+        givenExistingBasket(existingBasket)
+        givenExistingBook(inputParameters.bookId)
+
+        whenIAddItemToBasket(inputParameters)
+
+        shouldFindBasketById(inputParameters.basketId)
+        shouldFindBookById(inputParameters.bookId)
+        shouldSave(expectedBasket)
+        shouldNotifyAbout(expectedEvents)
+    }
+
+    @Test
+    fun `GIVEN an existing basket with 2 different existing potter book WHEN I add to basket a same book THEN total should be 23,2 euros`() {
+        val inputParameters = AddItemToBasketParametersMother.create()
+        val existingBasketItem1 = BasketItemMother.create()
+        val existingBasketItem2 = BasketItemMother.create(bookId = existingBasketItem1.bookId)
+        val existingBasket = BasketMother.create(
+                id = inputParameters.basketId,
+                items = listOf(existingBasketItem1,existingBasketItem2),
+                totalAmount = BasketTotalAmountMother.create(8.0),
+        )
+        val expectedBasket = BasketMother.create(
+                id = inputParameters.basketId,
+                items = listOf(existingBasketItem1,existingBasketItem2,
+                        BasketItemMother.create(
+                                itemId = inputParameters.itemId,
+                                bookId = inputParameters.bookId,
+                        )
+                ),
+                totalAmount = BasketTotalAmountMother.create(value = 23.2),
+        )
+        val expectedEvents = listOf(
+                ItemAddedToBasketMother.create(
+                        aggregateId = inputParameters.basketId.value,
+                        newItem = inputParameters.itemId.value,
+                        newTotalAmount = 23.2,
                 )
         )
 
