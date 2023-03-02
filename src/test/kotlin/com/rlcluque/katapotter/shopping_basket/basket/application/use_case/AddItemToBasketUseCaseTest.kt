@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 
 internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
 
-    private val systemUnderTest = AddItemToBasketUseCase(basketRepository,bookRepository)
+    private val systemUnderTest = AddItemToBasketUseCase(basketRepository, bookRepository)
 
     @Test
     fun `GIVEN an existing basket with one existing potter book WHEN I add to basket the same book THEN total should be 16 euros`() {
@@ -96,11 +96,11 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
         )
         val existingBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(existingBasketItem1,existingBasketItem2),
+                items = listOf(existingBasketItem1, existingBasketItem2),
         )
         val expectedBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(existingBasketItem1,existingBasketItem2,
+                items = listOf(existingBasketItem1, existingBasketItem2,
                         BasketItemMother.create(
                                 itemId = inputParameters.itemId,
                                 bookId = inputParameters.bookId,
@@ -136,11 +136,11 @@ internal class AddItemToBasketUseCaseTest : ShoppingBasketTest() {
         val existingBasketItem4 = BasketItemMother.create()
         val existingBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(existingBasketItem1,existingBasketItem2,existingBasketItem3,existingBasketItem4),
+                items = listOf(existingBasketItem1, existingBasketItem2, existingBasketItem3, existingBasketItem4),
         )
         val expectedBasket = BasketMother.create(
                 id = inputParameters.basketId,
-                items = listOf(existingBasketItem1,existingBasketItem2,existingBasketItem3,existingBasketItem4,
+                items = listOf(existingBasketItem1, existingBasketItem2, existingBasketItem3, existingBasketItem4,
                         BasketItemMother.create(
                                 itemId = inputParameters.itemId,
                                 bookId = inputParameters.bookId,

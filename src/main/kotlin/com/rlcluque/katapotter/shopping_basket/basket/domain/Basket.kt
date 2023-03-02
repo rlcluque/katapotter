@@ -37,8 +37,8 @@ data class Basket(
                 5 -> 25
                 else -> throw Exception("End of the world")
             }
-        val totalAmountForDistinctBooks = distinct.count().toDouble() * 8 * (100 - discount) / 100
-        val totalAmountForRepeatedBooks = (items.count().toDouble() - distinct.count()) * 8
+        val totalAmountForDistinctBooks = distinct.count().toDouble() * Book.DEFAULT_PRICE * (100 - discount) / 100
+        val totalAmountForRepeatedBooks = (items.count().toDouble() - distinct.count()) * Book.DEFAULT_PRICE
 
         totalAmount = BasketTotalAmount(totalAmountForDistinctBooks + totalAmountForRepeatedBooks)
     }
